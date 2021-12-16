@@ -37,5 +37,3 @@ mv f_2.txt f_3.txt ~/Desktop/homework_1/folder_2
    Выходим из vim: :wq
    Делаем скрипт исполняемым : chmod +x script.sh
    Выполняем скрипт: sh script.sh
-
-
