@@ -7,9 +7,16 @@
 	"item": [
 		{
 			"name": "EP_1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": {
 					"raw": "http://162.55.220.72:5005/get_method?name=Yuri&age=23",
 					"protocol": "http",
@@ -278,4 +285,4 @@
 			"response": []
 		}
 	]
-} 
+}
