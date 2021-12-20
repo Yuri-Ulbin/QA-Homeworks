@@ -20,8 +20,7 @@
 							"//3. Проверить, что в body приходит правильный string.\r",
 							"pm.test(\"Body matches string\", function () {\r",
 							"    pm.expect(pm.response.text()).to.include(\"This is the first responce from server!\");\r",
-							"});\r",
-							""
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -165,10 +164,7 @@
 							"pm.test(\"Dog's name = Luky\", function () { pm.expect(jsonData.family.pets.dog.name).to.eql(\"Luky\"); });\r",
 							"\r",
 							"//12. Проверить, что параметр age имеет значение 4.\r",
-							"pm.test(\"Dog age = 4\", function () { pm.expect(jsonData.family.pets.dog.age).to.eql(4); });\r",
-							"\r",
-							"\r",
-							""
+							"pm.test(\"Dog age = 4\", function () { pm.expect(jsonData.family.pets.dog.age).to.eql(4); });"
 						],
 						"type": "text/javascript"
 					}
@@ -275,20 +271,7 @@
 							"let obj = resp_salary;\r",
 							"for (let key in obj) {\r",
 							"\tconsole.log(obj[key]); \r",
-							"}\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							""
+							"}"
 						],
 						"type": "text/javascript"
 					}
@@ -387,14 +370,10 @@
 							"pm.test(\"jsonData.person.u_salary_5_years is equal req_salary*4.2\", function () { pm.expect(jsonData.person.u_salary_5_years).to.eql(req_salary*4.2); });\r",
 							"\r",
 							"//22. ***Написать цикл который выведет в консоль по порядку элементы списка из параметра person.\r",
-							"let obj = jsonData.person;\r",
-							"for (let key in obj) {\r",
-							"\tconsole.log(key); \r",
-							"    \r",
-							"}\r",
+							"var obj = jsonData.person;\r",
 							"\r",
-							"for (let key in obj) {\r",
-							"\tconsole.log(obj[key]); \r",
+							"for (var prop in obj) {\r",
+							"  console.log(prop + \" = \" + obj[prop]);\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -434,4 +413,4 @@
 			"response": []
 		}
 	]
-} 
+}
