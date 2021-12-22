@@ -1,0 +1,570 @@
+{
+	"info": {
+		"_postman_id": "c7ca5f6b-fa97-4b4c-9dc8-cb042e9a12d0",
+		"name": "hw_6_Postman2_gr25_Yuri_Ulbin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1) login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var respData = pm.response.json(); // спарсить ответ\r",
+							"\r",
+							"// Приходящий токен необходимо передать во все остальные запросы:\r",
+							"pm.environment.set(\"token\", respData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "login",
+							"value": "Yura",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}login",
+					"host": [
+						"{{url}}login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2) user_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Задание переменных:\r",
+							"var respData = pm.response.json(); // спарсить ответ\r",
+							"var reqData = JSON.parse(request.data); // спарсить данные из request (raw)\r",
+							"var req_salary = reqData.salary;\r",
+							"var resp_salary_6_months = respData.qa_salary_after_6_months;\r",
+							"var resp_salary_12_months = respData.qa_salary_after_12_months;\r",
+							"var resp_salary_1_5_year = respData.person.u_salary_1_5_year;\r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Статус код 200:\r",
+							"pm.test(\"Status code is 200\", function() { \r",
+							"    pm.response.to.have.status(200); \r",
+							"}); \r",
+							"\r",
+							"// 2) Проверка структуры json в ответе (схема):\r",
+							"var scheme = {\r",
+							"\t\"type\": \"object\",\r",
+							"\t\"properties\": {\r",
+							"\t\t\"person\": {\r",
+							"\t\t\t\"type\": \"object\",\r",
+							"\t\t\t\"properties\": {\r",
+							"\t\t\t\t\"u_age\": {\"type\": \"number\"},\r",
+							"\t\t\t\t\"u_name\": {\r",
+							"\t\t\t\t\t\"type\": \"array\",\r",
+							"\t\t\t\t\t\"items\": {\r",
+							"\t\t\t\t\t\t\"type\": [\"string\", \"number\"]\r",
+							"\t\t\t\t\t\t},\r",
+							"\t\t\t\t\t},\r",
+							"\t\t\t\t\"u_salary_1_5_year\": {\"type\": \"number\"},\r",
+							"\t\t\t},\r",
+							"\t\t},\r",
+							"\t\t\"qa_salary_after_12_months\": {\"type\": \"number\"},\r",
+							"\t\t\"qa_salary_after_6_months\": {\"type\": \"number\"},\r",
+							"\t\t\"start_qa_salary\": {\"type\": \"number\"},\r",
+							"\t}\r",
+							"};\r",
+							"// Проверка схемы:\r",
+							"pm.test(\"Checking json structure in response\", function() {\r",
+							"\tvar result = tv4.validate(respData, scheme);\r",
+							"\tpm.expect(result).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// 3) В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент:\r",
+							"pm.test(\"Test: salary * 2\", function() { \r",
+							"    pm.expect(resp_salary_6_months).to.eql(req_salary * 2);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test: salary * 2.9\", function() { \r",
+							"    pm.expect(resp_salary_12_months).to.eql(req_salary * 2.9);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test: salary * 4\", function() { \r",
+							"    pm.expect(resp_salary_1_5_year).to.eql(req_salary * 4);\r",
+							"});\r",
+							"\r",
+							"// 4) Достать значение из поля \"u_salary_1_5_year\" и передать в поле salary запроса {{url}}get_test_user:\r",
+							"pm.environment.set(\"salary_1_5_year\", resp_salary_1_5_year); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\":23,\r\n    \"salary\":1000,\r\n    \"name\":\"Yura\",\r\n    \"auth_token\":\"{{token}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}user_info",
+					"host": [
+						"{{url}}user_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3) new_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Задание переменных:\r",
+							"var respData = pm.response.json();\r",
+							"var resp_salary = respData.salary[0]; //взять первый элемент массива\r",
+							"var resp_salary_x2 = +respData.salary[1]; //взять второй элемент массива и привести его в number\r",
+							"var resp_salary_x3 = +respData.salary[2];\r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Статус код 200:\r",
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2) Проверка структуры json в ответе (схема):\r",
+							"var scheme = {\r",
+							"\t\"type\": \"object\",\r",
+							"\t\"properties\": {\r",
+							"\t\t\"age\": {\"type\": \"number\"},\r",
+							"\t\t\"name\": {\"type\": \"string\"},\r",
+							"\t\t\"salary\": {\r",
+							"\t\t\t\"type\": \"array\",\r",
+							"\t\t\t\"items\": {\r",
+							"\t\t\t\t\"type\": [\"number\", \"string\"]\r",
+							"\t\t\t}\r",
+							"\t\t}\r",
+							"\t}\r",
+							"};\r",
+							"// Проверка схемы:\r",
+							"pm.test(\"Checking json structure in response\", function() {\r",
+							"\tvar result = tv4.validate(respData, scheme);\r",
+							"\tpm.expect(result).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// 3) В ответе указаны коэффициенты умножения salary, напишите тесты по проверке правильности результата перемножения на коэффициент:\r",
+							"pm.test(\"Test: salary_x2 = salary * 2\", function() {\r",
+							"    pm.expect(resp_salary_x2).to.eql(resp_salary * 2);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test: salary_x3 = salary * 3\", function() {\r",
+							"    pm.expect(resp_salary_x3).to.eql(resp_salary * 3);\r",
+							"});\r",
+							"\r",
+							"// 4) проверить, что 2-й элемент массива salary больше 1-го и 0-го\r",
+							"pm.test(\"Test: salary_x3 > salary_x2 & salary_x3 > salary\", function() {\r",
+							"    pm.expect(resp_salary_x3).to.above(resp_salary_x2); // вариант сравнения 1\r",
+							"    pm.expect(resp_salary_x3 > resp_salary).to.be.true; // вариант сравнения 2\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "age",
+							"value": "23",
+							"type": "text"
+						},
+						{
+							"key": "salary",
+							"value": "1000",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Yura",
+							"type": "text"
+						},
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}new_data",
+					"host": [
+						"{{url}}new_data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4) test_pet_info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Задание  переменных:\r",
+							"var respData = pm.response.json();\r",
+							"var reqData = request.data; // спарсить данные из request (form-data)\r",
+							"var resp_daily_food = respData.daily_food;\r",
+							"var resp_daily_sleep = respData.daily_sleep;\r",
+							"var req_weight = reqData.weight; \r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Статус код 200:\r",
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2) Проверка структуры json в ответе (схема):\r",
+							"var scheme = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"age\": {\"type\":\"number\"},\r",
+							"        \"daily_food\": {\"type\":\"number\"},\r",
+							"        \"daily_sleep\": {\"type\": \"number\"},\r",
+							"        \"name\": {\"type\": \"string\"}\r",
+							"    }\r",
+							"};\r",
+							"// Проверка схемы:\r",
+							"pm.test(\"Checking json structure in response\", function() {\r",
+							"\tvar result = tv4.validate(respData, scheme);\r",
+							"\tpm.expect(result).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// 3) В ответе указаны коэффициенты умножения weight, напишите тесты по проверке правильности результата перемножения на коэффициент:\r",
+							"pm.test(\"Test: weight * 0.012\", function() {\r",
+							"    pm.expect(resp_daily_food).to.eql(req_weight * 0.012);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Test: weight * 2.5\", function() {\r",
+							"    pm.expect(resp_daily_sleep).to.eql(req_weight * 2.5);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "23",
+							"type": "text"
+						},
+						{
+							"key": "weight",
+							"value": "80",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Yura",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}test_pet_info",
+					"host": [
+						"{{url}}test_pet_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5) get_test_user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Задание переменных:\r",
+							"var respData = pm.response.json();\r",
+							"var reqData = request.data;\r",
+							"var resp_name = respData.name;\r",
+							"var req_name = reqData.name;\r",
+							"var req_age = reqData.age;\r",
+							"var resp_age = respData.age; \r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Статус код 200:\r",
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2) Проверка структуры json в ответе (cхема):\r",
+							"var scheme = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"age\": {\"type\": \"string\"},\r",
+							"        \"family\": {\r",
+							"            \"type\": \"object\",\r",
+							"            \"properties\": {\r",
+							"                \"children\": {\r",
+							"                    \"type\": \"array\",\r",
+							"                    \"items\": {\r",
+							"                        \"type\": \"array\",\r",
+							"                        \"items\": {\r",
+							"                            \"type\": [\"string\", \"number\"]\r",
+							"                        },\r",
+							"                    },\r",
+							"                },\r",
+							"                \"u_salary_1_5_year\": {\"type\": \"number\"},\r",
+							"            },\r",
+							"        },\r",
+							"        \"name\": {\"type\": \"string\"},\r",
+							"        \"salary\": {\"type\": \"number\"}\r",
+							"    }\r",
+							"};\r",
+							"// Проверка схемы:\r",
+							"pm.test(\"Checking json structure in response\", function() {\r",
+							"\tvar result = tv4.validate(respData, scheme);\r",
+							"\tpm.expect(result).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// 3) Проверить что значение поля name = значению переменной name из окружения:\r",
+							"pm.environment.set(\"name\", req_name); // передать переменную из запроса в окружение\r",
+							"var env_name = pm.environment.get(\"name\"); // взять переменную из окружения\r",
+							"\r",
+							"pm.test(\"Test: name\", function() { \r",
+							"    pm.expect(resp_name).to.eql(env_name);\r",
+							"});\r",
+							"\r",
+							"// 4) Проверить что значение поля age в ответе соответствует отправленному в запросе значению поля age:\r",
+							"pm.test(\"Test: age\", function() {\r",
+							"    pm.expect(resp_age).to.eql(req_age);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "salary",
+							"value": "{{salary_1_5_year}}",
+							"type": "text"
+						},
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "23",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Yura",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}get_test_user",
+					"host": [
+						"{{url}}get_test_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6) currency",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var respData = pm.response.json();\r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Можете взять любой объект из присланного списка, используйте js random:\r",
+							"for (var i = 0; i < respData.length; i++) {\r",
+							"    var random = _.random(respData.length);\r",
+							"    var Cur_ID = respData[random].Cur_ID;\r",
+							"\r",
+							"// В объекте возьмите Cur_ID и передать через окружение в следующий запрос:\r",
+							"    pm.environment.set(\"Cur_ID\", Cur_ID);\r",
+							"    if (Cur_ID >= 371) { // КОСТЫЛЬ, уберется на проверку статусов\r",
+							"        break;\r",
+							"    }\r",
+							"};"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}currency",
+					"host": [
+						"{{url}}currency"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7) curr_byn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Задание переменных:\r",
+							"var respData = pm.response.json();\r",
+							"\r",
+							"// Тесты:\r",
+							"// 1) Статус код 200:\r",
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2) Проверка структуры json в ответе (схема):\r",
+							"var scheme = {\r",
+							"    \"type\": \"object\",\r",
+							"    \"properties\": {\r",
+							"        \"Cur_Abbreviation\": {\"type\": \"string\"},\r",
+							"        \"Cur_ID\": {\"type\": \"number\"},\r",
+							"        \"Cur_Name\": {\"type\": \"string\"},\r",
+							"        \"Cur_OfficialRate\": {\"type\": \"number\"},\r",
+							"        \"Cur_Scale\": {\"type\": \"number\"},\r",
+							"        \"Date\": {\"type\": \"string\"}\r",
+							"    }\r",
+							"};\r",
+							"// Проверка схемы:\r",
+							"pm.test(\"Checking json structure in response\", function() {\r",
+							"\tvar result = tv4.validate(respData, scheme);\r",
+							"\tpm.expect(result).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "auth_token",
+							"value": "{{token}}",
+							"type": "text"
+						},
+						{
+							"key": "curr_code",
+							"value": "{{Cur_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}curr_byn",
+					"host": [
+						"{{url}}curr_byn"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
