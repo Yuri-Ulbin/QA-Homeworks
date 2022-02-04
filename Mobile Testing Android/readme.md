@@ -1,4 +1,9 @@
-Moble testing Android HW_1 ToDoList
+Mobile testing HW_0 - Чек-листы проверок мобильного приложения
+1) Создать чек лист проверок мобильного приложения, минимум 50 пунктов.		
+
+Решение в Гугл Таблицах :		https://docs.google.com/spreadsheets/d/1pY-xVt8NPrgbrXnkrXkI-UVG3TmScoelhu34FO0LeOg/
+
+Mobile testing Android HW_1 ToDoList
 
 1) Собрать приложение на эмуляторе
 2) Собрать приложение на реальном телефоне
